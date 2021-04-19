@@ -1,0 +1,4 @@
+Links interés
+
+https://wiki.clusterlabs.org/wiki/Pacemaker
+https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/2.0/pdf/Clusters_from_Scratch/Pacemaker-2.0-Clusters_from_Scratch-en-US.pdf

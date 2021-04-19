@@ -1,4 +1,22 @@
 Links interés
 
+Documentació oficial
+https://clusterlabs.org/pacemaker/doc/
 https://wiki.clusterlabs.org/wiki/Pacemaker
+
+Clusters from Scratch
 https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/2.0/pdf/Clusters_from_Scratch/Pacemaker-2.0-Clusters_from_Scratch-en-US.pdf
+
+Pacemaker Administrarion
+https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/2.0/pdf/Pacemaker_Administration/Pacemaker-2.0-Pacemaker_Administration-en-US.pdf
+
+Pacemaker Development
+https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/2.0/pdf/Pacemaker_Development/Pacemaker-2.0-Pacemaker_Development-en-US.pdf
+
+Configuration explained
+https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/2.0/pdf/Pacemaker_Explained/Pacemaker-2.0-Pacemaker_Explained-en-US.pdf
+
+Pacemaker remote
+https://clusterlabs.org/pacemaker/doc/en-US/Pacemaker/2.0/pdf/Pacemaker_Remote/Pacemaker-2.0-Pacemaker_Remote-en-US.pdf
+
+

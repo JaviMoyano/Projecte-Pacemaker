@@ -30,3 +30,17 @@ Comprobar con corosync que los nodos están conectados:
 ```
 corosync-cfgtool -s
 ```
+
+Para chequear las "membresías" del clúster
+```
+corosync-cmapctl | grep members
+pcs status corosync
+```
+El ID es la IP, y en faults no debería salir nada (si no hay fallos). If  you  see  something  different,  you  might  want  to  start  by  checking  the  node’s  network,  firewall  andSELinux configurations
+
+Fencing 
+
+STONITH ("Shoot The Other Node In The Head" or "Shoot The Offending Node In The Head"), sometimes called STOMITH ("Shoot The Other Member/Machine In The Head"), is a technique for fencing in computer clusters.[1]
+Fencing is the isolation of a failed node so that it does not cause disruption to a computer cluster. As its name suggests, STONITH fences failed nodes by resetting or powering down the failed node.
+
+Using IPMI as a power fencing device may seem like a good choice. However, if the IPMI shares powerand/or network access with the host (such as most onboard IPMI controllers), a power or network failurewill cause both the host and its fencing device to fail. The cluster will be unable to recover, and must stopall resources to avoid a possible split-brain situation.

@@ -66,3 +66,12 @@ pcs resource create ClusterIP ocf:heartbeat:IPAddr2 ip=x.x.x.x cidr_netmask=xx o
 ### Quorum
 (2 * active nodes) > total nodes
 Excluyendo los clústers de 2 nodos, si esta condición no se cumple, pacemaker aturará tots els nodes per a prevenir la corrupció de dades. Corosync permet que això es doni també en els clústers de dos nodes. 
+
+
+### Prevent Resources from Moving after Recovery
+El transport de recursos entre nodes, requereix un temps determinat, que augmenta quan es tracten bases de dades, per exemple. En general, es preferible que aquests recursos siguin engegats on hi eren prèviament. 
+El concepte *stickiness* de Pacemaker, controla en quina mida preferim que el servei sigui engegat on ja hi és. Per defecte, Pacemaker assumeix que no hi ha cap tipus de cost en moure els recursos entre nodes, per això la existencia de aquest concepte.
+```
+pcs resource defaults resource-stickiness=100
+pcs resource defaults
+```

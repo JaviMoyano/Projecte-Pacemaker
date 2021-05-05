@@ -22,7 +22,7 @@ pcs cluster setup mycluster i02 i26 (si no funciona, asegurarse que la contrase√
 pcs cluster start --all "or" pcs cluster start i02 i26 "or" pcs cluster start en cada nodo
 ```
 we are not enabling the corosync and pacemaker services to start at boot. 
-If a cluster node fails or is rebooted, you will need to run pcs cluster start nodename (or--all) 
+If a cluster node fails or is rebooted, you will need to run pcs cluster start nodename (or --all) 
 to start the cluster on it. While you could enable the services to start at boot, requiring a manual 
 start of cluster services gives you the opportunity to do a post-mortem investigation of a node failure before returning it to the cluster.
 

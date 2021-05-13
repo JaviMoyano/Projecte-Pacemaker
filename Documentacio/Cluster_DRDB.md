@@ -68,7 +68,7 @@ on i02 {
 	address 10.200.243.202:7789;
 }
 on i26 {
-	disk /dev/diskedt/drbd-demo;
+	disk /dev/diskedt/drbd.demo;
 	address 10.200.243.226:7789;
 }
 }
@@ -76,9 +76,9 @@ on i26 {
 
 Creamos los metadatos de forma local para el recurso DRBD, comprobamos que está cargado el módulo DRDBD, y actvamos el recurso DRBD. Ejecutamos el proceso en un sólo nodo.
 ```
-drbdadm create-md wwwdate 
+drbdadm create-md wwwdata
 modprobe drbd
-drbdadm up wwwdate
+drbdadm up wwwdata
 ```
 
 Comprobamos el estado de DRBD en este nodo.
@@ -154,3 +154,11 @@ pcs node standby i02
 ```
 
 Podem observar que tots els recursos es mouen al node i26
+
+
+### Configurar STONITH
+STONITH protegeix les dades de ser corrompudes per nodes que no funcionin correctament. Un node pot no respondre, pero no significa que les dades estiguin protegides; STONITH s'assegura que el node realment estigui offline abans de permetre l'accés a les dades desde altres nodes.
+
+Tenim que diferenciar entre errors del node, i errors de la xarxa. 
+
+

@@ -1,0 +1,138 @@
+<cib crm_feature_set="3.6.1" validate-with="pacemaker-3.5" epoch="24" num_updates="0" admin_epoch="0" cib-last-written="Mon May 10 12:34:25 2021" update-origin="i02" update-client="cibadmin" update-user="root" have-quorum="1" dc-uuid="1">
+  <configuration>
+    <crm_config>
+      <cluster_property_set id="cib-bootstrap-options">
+        <nvpair id="cib-bootstrap-options-have-watchdog" name="have-watchdog" value="false"/>
+        <nvpair id="cib-bootstrap-options-dc-version" name="dc-version" value="2.0.5-10.fc32-ba59be7122"/>
+        <nvpair id="cib-bootstrap-options-cluster-infrastructure" name="cluster-infrastructure" value="corosync"/>
+        <nvpair id="cib-bootstrap-options-cluster-name" name="cluster-name" value="mycluster"/>
+        <nvpair id="cib-bootstrap-options-stonith-enabled" name="stonith-enabled" value="false"/>
+      </cluster_property_set>
+    </crm_config>
+    <nodes>
+      <node id="1" uname="i02"/>
+      <node id="2" uname="i26"/>
+    </nodes>
+    <resources>
+      <primitive id="ClusterIP" class="ocf" type="IPaddr2" provider="heartbeat">
+        <instance_attributes id="ClusterIP-instance_attributes">
+          <nvpair id="ClusterIP-instance_attributes-cidr_netmask" name="cidr_netmask" value="32"/>
+          <nvpair id="ClusterIP-instance_attributes-ip" name="ip" value="192.168.122.202"/>
+        </instance_attributes>
+        <operations>
+          <op name="monitor" interval="30s" id="ClusterIP-monitor-interval-30s"/>
+          <op name="start" timeout="20s" interval="0s" id="ClusterIP-start-interval-0s"/>
+          <op name="stop" timeout="20s" interval="0s" id="ClusterIP-stop-interval-0s"/>
+        </operations>
+      </primitive>
+      <primitive id="WebSite" class="ocf" type="apache" provider="heartbeat">
+        <instance_attributes id="WebSite-instance_attributes">
+          <nvpair id="WebSite-instance_attributes-configfile" name="configfile" value="/etc/httpd/conf/httpd.conf"/>
+          <nvpair id="WebSite-instance_attributes-statusurl" name="statusurl" value="http://localhost/server-status"/>
+        </instance_attributes>
+        <operations>
+          <op name="monitor" interval="1min" id="WebSite-monitor-interval-1min"/>
+          <op name="start" timeout="40s" interval="0s" id="WebSite-start-interval-0s"/>
+          <op name="stop" timeout="60s" interval="0s" id="WebSite-stop-interval-0s"/>
+        </operations>
+      </primitive>
+      <clone id="WebData-clone">
+        <primitive id="WebData" class="ocf" type="drbd" provider="linbit">
+          <instance_attributes id="WebData-instance_attributes">
+            <nvpair id="WebData-instance_attributes-drbd_resource" name="drbd_resource" value="wwwdata"/>
+          </instance_attributes>
+          <operations>
+            <op name="demote" timeout="90" interval="0s" id="WebData-demote-interval-0s"/>
+            <op name="monitor" interval="60s" id="WebData-monitor-interval-60s"/>
+            <op name="notify" timeout="90" interval="0s" id="WebData-notify-interval-0s"/>
+            <op name="promote" timeout="90" interval="0s" id="WebData-promote-interval-0s"/>
+            <op name="reload" timeout="30" interval="0s" id="WebData-reload-interval-0s"/>
+            <op name="start" timeout="240" interval="0s" id="WebData-start-interval-0s"/>
+            <op name="stop" timeout="100" interval="0s" id="WebData-stop-interval-0s"/>
+          </operations>
+        </primitive>
+        <meta_attributes id="WebData-clone-meta_attributes">
+          <nvpair id="WebData-clone-meta_attributes-clone-max" name="clone-max" value="2"/>
+          <nvpair id="WebData-clone-meta_attributes-clone-node-max" name="clone-node-max" value="1"/>
+          <nvpair id="WebData-clone-meta_attributes-master-max" name="master-max" value="1"/>
+          <nvpair id="WebData-clone-meta_attributes-master-node-max" name="master-node-max" value="1"/>
+          <nvpair id="WebData-clone-meta_attributes-notify" name="notify" value="true"/>
+          <nvpair id="WebData-clone-meta_attributes-promotable" name="promotable" value="true"/>
+        </meta_attributes>
+      </clone>
+      <primitive id="WebFS" class="ocf" type="Filesystem" provider="heartbeat">
+        <instance_attributes id="WebFS-instance_attributes">
+          <nvpair id="WebFS-instance_attributes-device" name="device" value="/dev/drbd1"/>
+          <nvpair id="WebFS-instance_attributes-directory" name="directory" value="/var/www/html"/>
+          <nvpair id="WebFS-instance_attributes-fstype" name="fstype" value="ext4"/>
+        </instance_attributes>
+        <operations>
+          <op name="monitor" timeout="40s" interval="20s" id="WebFS-monitor-interval-20s"/>
+          <op name="start" timeout="60s" interval="0s" id="WebFS-start-interval-0s"/>
+          <op name="stop" timeout="60s" interval="0s" id="WebFS-stop-interval-0s"/>
+        </operations>
+      </primitive>
+    </resources>
+    <constraints>
+      <rsc_colocation rsc="WebSite" with-rsc="ClusterIP" score="INFINITY" id="colocation-WebSite-ClusterIP-INFINITY"/>
+      <rsc_order first="ClusterIP" then="WebSite" first-action="start" then-action="start" id="order-ClusterIP-WebSite-mandatory"/>
+      <rsc_location id="location-WebSite-i26-50" rsc="WebSite" node="i26" score="50"/>
+      <rsc_location id="location-WebSite-i02-INFINITY" rsc="WebSite" node="i02" score="INFINITY"/>
+      <rsc_colocation rsc="WebFS" with-rsc="WebData-clone" score="INFINITY" with-rsc-role="Master" id="colocation-WebFS-WebData-clone-INFINITY"/>
+      <rsc_order first="WebData-clone" then="WebFS" first-action="promote" then-action="start" id="order-WebData-clone-WebFS-mandatory"/>
+      <rsc_colocation rsc="WebSite" with-rsc="WebFS" score="INFINITY" id="colocation-WebSite-WebFS-INFINITY"/>
+      <rsc_order first="WebFS" then="WebSite" first-action="start" then-action="start" id="order-WebFS-WebSite-mandatory"/>
+    </constraints>
+    <op_defaults>
+      <meta_attributes id="op_defaults-meta_attributes">
+        <nvpair id="op_defaults-meta_attributes-timeout" name="timeout" value="240s"/>
+      </meta_attributes>
+    </op_defaults>
+  </configuration>
+  <status>
+    <node_state id="1" uname="i02" in_ccm="true" crmd="online" crm-debug-origin="do_update_resource" join="member" expected="member">
+      <lrm id="1">
+        <lrm_resources>
+          <lrm_resource id="ClusterIP" type="IPaddr2" class="ocf" provider="heartbeat">
+            <lrm_rsc_op id="ClusterIP_last_0" operation_key="ClusterIP_start_0" operation="start" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="7:0:0:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:0;7:0:0:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i02" call-id="15" rc-code="0" op-status="0" interval="0" last-rc-change="1620642916" last-run="1620642916" exec-time="45" queue-time="0" op-digest="75df1567eb9457f8f3c4486bbf875846"/>
+            <lrm_rsc_op id="ClusterIP_monitor_30000" operation_key="ClusterIP_monitor_30000" operation="monitor" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="3:1:0:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:0;3:1:0:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i02" call-id="16" rc-code="0" op-status="0" interval="30000" last-rc-change="1620642916" exec-time="28" queue-time="0" op-digest="038fe5a0975f25581afca6f87d57e67c"/>
+          </lrm_resource>
+          <lrm_resource id="WebSite" type="apache" class="ocf" provider="heartbeat">
+            <lrm_rsc_op id="WebSite_last_0" operation_key="WebSite_start_0" operation="start" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="4:1:0:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:0;4:1:0:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i02" call-id="17" rc-code="0" op-status="0" interval="0" last-rc-change="1620642916" last-run="1620642916" exec-time="1098" queue-time="0" op-digest="49ba395a3f2c142631c2ef2c431a29d9"/>
+            <lrm_rsc_op id="WebSite_monitor_60000" operation_key="WebSite_monitor_60000" operation="monitor" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="6:2:0:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:0;6:2:0:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i02" call-id="20" rc-code="0" op-status="0" interval="60000" last-rc-change="1620642917" exec-time="43" queue-time="0" op-digest="eddc33bef3f1592ad847638ee485316f"/>
+          </lrm_resource>
+          <lrm_resource id="WebData" type="drbd" class="ocf" provider="linbit">
+            <lrm_rsc_op id="WebData_last_0" operation_key="WebData_promote_0" operation="promote" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="9:2:0:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:0;9:2:0:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i02" call-id="22" rc-code="0" op-status="0" interval="0" last-rc-change="1620642917" last-run="1620642917" exec-time="35" queue-time="0" op-digest="bc5c2e08730036ec602d79a958821da4" op-force-restart="  drbd_resource  " op-restart-digest="bc5c2e08730036ec602d79a958821da4"/>
+          </lrm_resource>
+        </lrm_resources>
+      </lrm>
+      <transient_attributes id="1">
+        <instance_attributes id="status-1">
+          <nvpair id="status-1-master-WebData" name="master-WebData" value="10000"/>
+        </instance_attributes>
+      </transient_attributes>
+    </node_state>
+    <node_state id="2" uname="i26" in_ccm="true" crmd="online" crm-debug-origin="do_update_resource" join="member" expected="member">
+      <lrm id="2">
+        <lrm_resources>
+          <lrm_resource id="ClusterIP" type="IPaddr2" class="ocf" provider="heartbeat">
+            <lrm_rsc_op id="ClusterIP_last_0" operation_key="ClusterIP_monitor_0" operation="monitor" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="4:0:7:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:7;4:0:7:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i26" call-id="5" rc-code="7" op-status="0" interval="0" last-rc-change="1620642916" last-run="1620642916" exec-time="29" queue-time="0" op-digest="75df1567eb9457f8f3c4486bbf875846"/>
+          </lrm_resource>
+          <lrm_resource id="WebSite" type="apache" class="ocf" provider="heartbeat">
+            <lrm_rsc_op id="WebSite_last_0" operation_key="WebSite_monitor_0" operation="monitor" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="5:0:7:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:7;5:0:7:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i26" call-id="9" rc-code="7" op-status="0" interval="0" last-rc-change="1620642916" last-run="1620642916" exec-time="28" queue-time="0" op-digest="49ba395a3f2c142631c2ef2c431a29d9"/>
+          </lrm_resource>
+          <lrm_resource id="WebData" type="drbd" class="ocf" provider="linbit">
+            <lrm_rsc_op id="WebData_last_0" operation_key="WebData_monitor_0" operation="monitor" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="6:0:7:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:0;6:0:7:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i26" call-id="14" rc-code="0" op-status="0" interval="0" last-rc-change="1620642916" last-run="1620642916" exec-time="42" queue-time="0" op-digest="bc5c2e08730036ec602d79a958821da4" op-force-restart="  drbd_resource  " op-restart-digest="bc5c2e08730036ec602d79a958821da4"/>
+            <lrm_rsc_op id="WebData_last_failure_0" operation_key="WebData_monitor_0" operation="monitor" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="6:0:7:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:0;6:0:7:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i26" call-id="14" rc-code="0" op-status="0" interval="0" last-rc-change="1620642916" last-run="1620642916" exec-time="42" queue-time="0" op-digest="bc5c2e08730036ec602d79a958821da4"/>
+            <lrm_rsc_op id="WebData_monitor_60000" operation_key="WebData_monitor_60000" operation="monitor" crm-debug-origin="do_update_resource" crm_feature_set="3.6.1" transition-key="13:3:0:d2edef22-8131-47ee-807b-ecff8ac18b93" transition-magic="0:0;13:3:0:d2edef22-8131-47ee-807b-ecff8ac18b93" exit-reason="" on_node="i26" call-id="19" rc-code="0" op-status="0" interval="60000" last-rc-change="1620642918" exec-time="62" queue-time="0" op-digest="8d4fc16ea0c6234d42760ddaec8eb79d"/>
+          </lrm_resource>
+        </lrm_resources>
+      </lrm>
+      <transient_attributes id="2">
+        <instance_attributes id="status-2">
+          <nvpair id="status-2-master-WebData" name="master-WebData" value="10000"/>
+        </instance_attributes>
+      </transient_attributes>
+    </node_state>
+  </status>
+</cib>

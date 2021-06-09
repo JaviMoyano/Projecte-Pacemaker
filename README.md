@@ -7,15 +7,21 @@
 L'objectiu és conéixer les funcionalitats de Pacemaker i d'altres tipus de software amb els que funciona conjuntament, per a dotar d'*Alta disponibilitat* a un clúster. Per demostrar el seu funcionament, aquest clúster estarà format per 3 nodes, i funcionarà com a un servidor que ofereix servei d'HTTP.
 
 ## Que és Pacemaker ?
-Pacemaker és un tipus de software de control de recursos de clúster, que pot proporcionar diferents característiques al conjunt de hosts. 
-S'utilitza generalment amb [Corosync] per . 
+Pacemaker és un tipus de software de control de recursos de clúster, que s'utilitza generalment per preservar la integritat de les dades i poder proporcionar un servei amb el mínim d'aturades possible. 
+Algunes de les característiques i funcionalitats que pot atorgar al conjunt de hosts són: 
 
 - Replicació de dades en els diferents nodes
-- Protecció i replicació de dades en cas de la caiguda d'algún node (redundància)
+- Protecció de les dades en cas de la caiguda d'algún node (redundància)
+- Emmagatzemament compartit
+- Actualització automàtica de les dades desde qualsevol dels nodes
+- Generar condicions per al funcionament dels serveis que ofereix el clúster
+    - Col·locació del servei a un node en concret (o que no s'engegi mai a )
+    - Serveis que només s'engegen si ja hi ha un altre actiu
+    - Ordre d'engegada dels serveis
 
 
 ## Clúster
-Un **clúster** es un conjunt de dos o més nodes que funcionen amb l'objectiu de portar a terme una o varies tasques. Aquestes funcions poden ser: 
+Un **clúster** es un conjunt de nodes que funciona amb l'objectiu de portar a terme una o varies tasques com si fóssin un únic ordinador. Aquestes funcions poden ser: 
 - **Emmagatzemament:** 
 - **Alta disponibilitat:** proporciona un servei sense aturades en cas de que algún element del sistema es caigués o fallés. 
 Un cop detectat un error de hardware o de software, s'engega automàticament la mateixa aplicació o servei a un altre sistema/node sense necessitat de fer-ho manualment. Aquest procés es conegut com *failover*, que es tradueix com a *migració a causa d'error*.

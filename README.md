@@ -1,6 +1,6 @@
 # Projecte Pacemaker edt 2020/2021
 
-![Imatge Logo Pacemaker](cluster/Logo_Pacemaker.png)
+![Imatge Logo Pacemaker](imatges/Logo_Pacemaker.png)
 
 
 ## Objectius del projecte
@@ -21,12 +21,13 @@ Algunes de les característiques i funcionalitats que pot atorgar al conjunt de 
 
 
 ## Clúster
-Un **clúster** es un conjunt de nodes que funciona amb l'objectiu de portar a terme una o varies tasques com si fóssin un únic ordinador. Aquestes funcions poden ser: 
-- **Emmagatzemament:** 
-- **Alta disponibilitat:** proporciona un servei sense aturades en cas de que algún element del sistema es caigués o fallés. 
-Un cop detectat un error de hardware o de software, s'engega automàticament la mateixa aplicació o servei a un altre sistema/node sense necessitat de fer-ho manualment. Aquest procés es conegut com *failover*, que es tradueix com a *migració a causa d'error*.
-- **Balanç de càrregues:** 
-- **Alt rendiment:** 
+Un **clúster** es un conjunt de nodes que funciona amb l'objectiu de portar a terme una o varies tasques com si fóssin un únic ordinador. Pot tenir diverses funcions, tals com:
+
+- **Alt rendiment:** els diferents nodes poden treballar paral·lelament per a reduir el temps d'execució dels serveis i millorar el rendiment global del sistema.
+- **Emmagatzemament:** permet allotjar tot el conjunt de dades als diferents nodes, el que ofereix la possibilitat de accedir a les dades del servidor a través de qualsevol dels ordinadors que composen el clúster. Aquesta característica la proporciona [GFS2](GFS2), conjuntament amb Pacemaker.
+- **Balanç de càrregues:**: distribueix les sol·licituds que provenen de la xarxa entre els diferents nodes, per a que no hi hagi una sobrecàrrega en un d'aquests. Es redirigeixen les ordres a un altre node en cas de que algún quedi inoperatiu.
+- **Alta disponibilitat:** proporciona un servei sense aturades en cas de que algún element del sistema caigués o fallés. 
+Un cop detectat un error de hardware o de software, s'engega automàticament la mateixa aplicació o servei a un altre sistema/node sense necessitat de fer-ho manualment. Aquest procés es conegut com *failover*, que es tradueix com a *migració a causa d'error*. 
 
 ### Components
 #### Cluster Information Base (CIB)
@@ -53,3 +54,15 @@ s ades a temps real entre els nodes del clúster.
 
 ### Corosync
 Proporciona al nodes la capacitat de formar part del clúster, així com de comunicar-se entre ells. També pot habilitar al clúster per fer quorum i atorgar una eina més per a una millor protecció de les dades.
+
+
+### Clúster Passive/Passive
+![Imatge Cluster PA](imatges/actiupassiu.png)
+
+
+
+
+
+### Clúster Active/Active
+![Imatge Cluster AA](imatges/actiuactiu.png)
+

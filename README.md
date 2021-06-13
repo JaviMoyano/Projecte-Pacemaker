@@ -20,7 +20,7 @@ Algunes de les característiques i funcionalitats que pot atorgar al conjunt de 
     - Ordre d'engegada dels serveis
 
 
-## Clúster
+## Que és un clúster?
 Un **clúster** es un conjunt de nodes que funciona amb l'objectiu de portar a terme una o varies tasques com si fóssin un únic ordinador. Pot tenir diverses funcions, tals com:
 
 - **Alt rendiment:** els diferents nodes poden treballar paral·lelament per a reduir el temps d'execució dels serveis i millorar el rendiment global del sistema.
@@ -56,13 +56,20 @@ s ades a temps real entre els nodes del clúster.
 Proporciona al nodes la capacitat de formar part del clúster, així com de comunicar-se entre ells. També pot habilitar al clúster per fer quorum i atorgar una eina més per a una millor protecció de les dades.
 
 
-### Clúster Passive/Passive
+### Clúster Active/Passive
 ![Imatge Cluster PA](imatges/actiupassiu.png)
+Està composat de un mínim de dos nodes, dels que només hi haurà un actiu, i la resta romandràn inactius com a servidors de suports o *failover*, en cas de que el node que estava actiu es caigués o fallés.
+Cal recalcar que els clients només estàn connectats al servidor que hi sigui actiu en aquell moment.
 
-
+És important que els dos servidors tinguin una configuració idéntica, i que en cas de fer canvis al servidor actiu, aquests es repliquin als nodes passius.
 
 
 
 ### Clúster Active/Active
 ![Imatge Cluster AA](imatges/actiuactiu.png)
+Està composat de un mínim de dos nodes, que ofereixen el mateix servei. La seva funció principal es distribuir la càrrega de treball entre els dos nodes, per a que evitar que algún quedi sobrecarregat. 
+
+L'estructura també conte un *balancejador*, que es es l'intermediari mitjançant el qual es comuniquen els clients amb els servidors. Es qui exerceix la funció de assignar les peticions als nodes segons el criteri que s'hagi establert (Round Robin, ).
+
+Per a que aquest mecanisme funcioni correctament, tots els nodes han de tenir la mateixa configuració, el que també els hi otorga redundància.
 

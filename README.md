@@ -10,6 +10,7 @@ L'objectiu és conéixer les funcionalitats de Pacemaker i d'altres tipus de sof
 Pacemaker és un tipus de software de control de recursos de clúster, que s'utilitza generalment per preservar la integritat de les dades i poder proporcionar un servei amb el mínim d'aturades possible. 
 Algunes de les característiques i funcionalitats que pot atorgar al conjunt de hosts són: 
 
+- Administració de la configuració de la infraestructura
 - Replicació de dades en els diferents nodes
 - Protecció de les dades en cas de la caiguda d'algún node (redundància)
 - Emmagatzemament compartit
@@ -31,29 +32,40 @@ Un cop detectat un error de hardware o de software, s'engega automàticament la 
 
 ### Components
 #### Cluster Information Base (CIB)
+![Imatge CiB](imatges/cib_xml.png)
 És un dimoni que utilitza XML internament que té la funció de distribuir i sincronitzar la configuració actual, i l'estat del *Designated Coordinator*(DC) - node assignat per Pacemaker per a detectar i distribuir l'estat del clúster - a tots els nodes.
+Al CiB es desen certes configuracions essencials per al funcionament de l'estructura. 
+
+- **Configuration**: conté informació sobre els recursos i els nodes.
+  - -  **crm_config**: configuracions globals
+  -  **nodes**: en aquest apartat surten els ordinadors pels quals està format el clúster.
+  -  **resources**: els servei que s'estàn duent a terme
+  -  **constraints**: són les restriccions. Condicions i especificacions per al funcionament i la localització dels recursos
+  - - **status**: 
+
 
 #### Cluster Resource Management Daemon (CRMd)
-Dimoni que gestiona les accions relacionades amb els recursos del clúster. Aquests recursos es poden manipular, per exemple, generant instàncies a partir d'aquests.
+Dimoni que gestiona les accions relacionades amb els recursos del clúster. Aquests recursos son serveis que es poden manipular per a donar diverses funcionalitats a l'estructura, per exemple, generant instàncies a partir d'aquests.
 
-Cada node inclou també un gestor dels recursos local (LMRd), que funciona com a interfície entre el dimoni CMRd i els recursos. LMRd passa les comandes de CMRd als agents, com per exemple, fer *start* o *stop*, o proporcionar informació sobre l'estat del node.
+Cada node inclou també un gestor dels recursos local (LMRd), que funciona com a interfície entre el dimoni CMRd (Pacemaker) i els recursos. LMRd passa les comandes de CMRd als agents, com per exemple, fer *start* o *stop*, o proporcionar informació sobre l'estat del node.
 
 #### Shoot the Other Node in the Head (STONITH)
 És una funcionalitat del clúster que processa les sol·licituds de *fence*, forçant l'aturada de nodes que s'hagin corromput o que no funcionin correctament, i eliminant-los del node per a protegir l'integritat de les dades. Está configurat en CIB i pot ser monitoritzat com un recurs més del clúster.
 
 ## Corosync
-Cluster Corosync es el component que s'encarrega de gestionar el sistema de comunicació, implementant
- alta disponibilitat entre aplicacions, és a dir, la transmissió de informació entre els
- nodes del clúster.
+Clúster Corosync es el component que s'encarrega de gestionar el sistema de comunicació entre els nodes, implementant la transmissió de informació entre els components, autoconeixement dels dispositius que formen part de l'estructura, i informació sobre l'estat de quorum.
+
+A l'aplicació pràctica, veiem la comanda *pcs* (Pacemaker/Corosync), que serveix per:
+- Crear i configurar un clúster
+- Modificar la configuració del clúster mentre està engegat
+- Mostrar l'informació de l'estat del clúster així com aturar-lo o engegar-lo
+
 
 ## DRBD
-DRBD (Distributed Replicated Block Device) és un sistema d'emmagatzemament replicat i di
-stribuit per a Linux. S'implement a nivell de driver de kernel, i ens permet replicar le
-s ades a temps real entre els nodes del clúster.
+DRBD (Distributed Replicated Block Device) és un sistema d'emmagatzemament replicat i distribuit per a Linux. 
+S'implementa com a un driver del kernel, i ens permet replicar les dades a temps real entre els nodes del clúster.
 
 
-### Corosync
-Proporciona al nodes la capacitat de formar part del clúster, així com de comunicar-se entre ells. També pot habilitar al clúster per fer quorum i atorgar una eina més per a una millor protecció de les dades.
 
 
 ### Clúster Active/Passive
@@ -67,7 +79,7 @@ Cal recalcar que els clients només estàn connectats al servidor que hi sigui a
 
 ### Clúster Active/Active
 ![Imatge Cluster AA](imatges/actiuactiu.png)
-Està composat de un mínim de dos nodes, que ofereixen el mateix servei. La seva funció principal es distribuir la càrrega de treball entre els dos nodes, per a que evitar que algún quedi sobrecarregat. 
+Està composat de un mínim de dos nodes, que ofereixen el mateix servei. La seva funció principal es distribuir la càrrega de treball entre els diferents dispositius, per a  evitar que algún quedi sobrecarregat. 
 
 L'estructura també conte un *balancejador*, que es es l'intermediari mitjançant el qual es comuniquen els clients amb els servidors. Es qui exerceix la funció de assignar les peticions als nodes segons el criteri que s'hagi establert (Round Robin, ).
 

@@ -30,6 +30,8 @@ Un **clúster** es un conjunt de nodes que funciona amb l'objectiu de portar a t
 - **Alta disponibilitat:** proporciona un servei sense aturades en cas de que algún element del sistema caigués o fallés. 
 Un cop detectat un error de hardware o de software, s'engega automàticament la mateixa aplicació o servei a un altre sistema/node sense necessitat de fer-ho manualment. Aquest procés es conegut com *failover*, que es tradueix com a *migració a causa d'error*. 
 
+Aquests clústers, a l'hora de muntar-los, s'utilitzará la comanda de shell **pcs**, que permet configurar a la vegada Pacemaker i Corosync, sol·lucionant internament totes les dependencies i característiques individuals entre aquests tipus de software. A versions més antigues de diferents sistemes operatius, calia configurar els dos components de formar separada, el que feia el procés molt més difícil i llarg.
+
 ### Components
 #### Cluster Information Base (CIB)
 ![Imatge CiB](imatges/cib_xml.png)
@@ -37,11 +39,11 @@ Un cop detectat un error de hardware o de software, s'engega automàticament la 
 Al CiB es desen certes configuracions essencials per al funcionament de l'estructura. 
 
 - **Configuration**: conté informació sobre els recursos i els nodes.
-  - -  **crm_config**: configuracions globals
-  -  **nodes**: en aquest apartat surten els ordinadors pels quals està format el clúster.
-  -  **resources**: els servei que s'estàn duent a terme
-  -  **constraints**: són les restriccions. Condicions i especificacions per al funcionament i la localització dels recursos
-  - - **status**: 
+  - **Crm_config**: configuracions globals
+  - **Nodes**: en aquest apartat surten els ordinadors pels quals està format el clúster.
+  - **Resources**: els servei que s'estàn duent a terme
+  - **Constraints**: són les restriccions. Condicions i especificacions per al funcionament i la localització dels recursos.
+- **Status**: conté la informació dels recursos que utilitza cada node. Basat en les dades que hi ha en aquest apartat, el clúster pot construir l'estat actual en el que està la estructura. En cas de voler tornar a un estar anterior o posterior del clúster, només caldria implantar l'arxiu corresponent a la configuració que hi havia en aquell moment.
 
 
 #### Cluster Resource Management Daemon (CRMd)
@@ -73,7 +75,7 @@ S'implementa com a un driver del kernel, i ens permet replicar les dades a temps
 Està composat de un mínim de dos nodes, dels que només hi haurà un actiu, i la resta romandràn inactius com a servidors de suports o *failover*, en cas de que el node que estava actiu es caigués o fallés.
 Cal recalcar que els clients només estàn connectats al servidor que hi sigui actiu en aquell moment.
 
-És important que els dos servidors tinguin una configuració idéntica, i que en cas de fer canvis al servidor actiu, aquests es repliquin als nodes passius.
+És important que els dos servidors tinguin una configuració idéntica, i que en cas de fer canvis al servidor actiu, aquests es repliquin als nodes passius. 
 
 
 

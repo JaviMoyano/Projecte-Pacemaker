@@ -1,26 +1,60 @@
-On each node, allow cluster-related services through the local firewall:
+# Procediment pràctic
 
-# firewall-cmd --permanent --add-service=high-availability
-success
-# firewall-cmd --reload
-success
+## Objectiu
+Muntaré un clúster d'alta disponibilitat de dos nodes amb Fedora, que ofereixi el servei HTTP de forma continuada. En cas de caiguda d'un dels dos nodes, l'altre node seguirà oferint aquest servei. 
+El contingut de el document html que oferirà el nostre servei, estarà sincronitzat en ambdós nodes, és a dir, si ho modifiquem a un dispositiu, el contingut es replicarà a l'altre.
 
-If you are using iptables directly, or some other firewall solution besides firewalld, simply openthe following ports, which can be used by various clustering components: TCP ports 2224, 3121,and 21064, and UDP port 5405.
+En aquest cas, he utilitzat com a nodes dos ordinadors de l'aula, i02 i i26. Generalment s'aconsella treballar desde un sol dispositiu, fent ús de la connexió ssh per a configurar els demés nodes.
 
-**Procediment per crear un clúster**
+Primer de tot, ens tenim que assegurar que els ordinadors on treballarem permetin l'*alta disponibilitat* per treballar amb el clúster.
+Podem obrir manualment els ports TCP 2224, 3121, 21064, i el port UDP 5405, a la vegada que deshabilitem el Selinux.
+L'altra opció es habilitar-ho desde el servei del comandes de firewall:
 
-The pcs command will configure corosync to use UDP unicast transport
-Instal·lar en els nodes: pacemaker pcs psmisc corosync drbd gfs2-utils
+```
+firewall-cmd --permanent --add-service=high-availability
+firewall-cmd --reload
+```
 
-ssh als nodes
-Set up hacluster passwd in all nodes (same password)
+## Procediment per crear un clúster
 
-1. Un cop reaitzada la configuració, fem 
+Es necessari que totes les omandes per a la configuració del clúster, dels nodes, instal·lacions, i, fins i tot, consultes de l'estat dels recursos de l'estructura, es realitzin com a usuari *root* o administrador.
+Instal·lem el programari necessari a tots els nodes: 
+
+```
+dnf -y install pacemaker pcs psmisc corosync drbd gfs2-utils
+```
+
+Engeguem el servei *pcsd* per a poder generar i configurar el clúster, i també habilitem que s'engegui quan fem boot de l'ordinador, per a agilitzar el procés.
+
+```
+systemctl start pcsd
+systemctl enable pcsd
+```
+
+Seguidament, tindrem que ficar una contrasenya a l'usuari *hacluster*, ja que serà necessari per a sincronitzar la configucació de corosync, o permetre el control dels nodes desde els altres nodes del clúster.
+Es convenient utilitzar la mateixa contrasenya a tots els usuaris hacluster dels diferents nodes.
+
+```
+passwd hacluster
+```
+
+### Configuració del Corosync
+
+Ens autentiquem a tots els nodes amb l'usuari esmentat per a poder començar el procés, i per a que posteriorment puguem crear el cluster desde un sol node.
 ```
 pcs host auth i02 i26
-pcs cluster setup mycluster i02 i26 (si no funciona, asegurarse que la contraseña de hacluster es la misma en todos los nodos)
-pcs cluster start --all "or" pcs cluster start i02 i26 "or" pcs cluster start en cada nodo
+
+pcs cluster setup mycluster i02 i26 (si no funciona, assegurar-se que la contrasenya de hacluster es la mateixa a tots els nodes)
 ```
+
+Podem engegar tots els nodes del clúster a la vegada, o de forma separada:
+
+```
+pcs cluster start --all (engegar tots els nodes del clúster)
+pcs cluster start i02 i26 (múltiples nodes desde qualsevol node)
+pcs cluster start (desde el node que vols engegar)
+```
+
 we are not enabling the corosync and pacemaker services to start at boot. 
 If a cluster node fails or is rebooted, you will need to run pcs cluster start nodename (or --all) 
 to start the cluster on it. While you could enable the services to start at boot, requiring a manual 

@@ -33,19 +33,24 @@ Un cop detectat un error de hardware o de software, s'engega automàticament la 
 ### Components
 #### Cluster Information Base (CIB)
 ![Imatge CiB](imatges/cib_xml.png)
+
+
 És un dimoni que utilitza XML internament que té la funció de distribuir i sincronitzar la configuració actual, i l'estat del *Designated Coordinator*(DC) - node assignat per Pacemaker per a detectar i distribuir l'estat del clúster - a tots els nodes.
 Al CiB es desen certes configuracions essencials per al funcionament de l'estructura. 
 
 - **Configuration**: conté informació sobre els recursos i els nodes.
   - -  **crm_config**: configuracions globals
   -  **nodes**: en aquest apartat surten els ordinadors pels quals està format el clúster.
-  -  **resources**: els servei que s'estàn duent a terme
+  -  **resources**: els servei que s'estàn duent a terme. 
   -  **constraints**: són les restriccions. Condicions i especificacions per al funcionament i la localització dels recursos
   - - **status**: 
 
 
 #### Cluster Resource Management Daemon (CRMd)
 Dimoni que gestiona les accions relacionades amb els recursos del clúster. Aquests recursos son serveis que es poden manipular per a donar diverses funcionalitats a l'estructura, per exemple, generant instàncies a partir d'aquests.
+```
+pcs resource create MyResourceName class:provider:resourceagent
+```
 
 Cada node inclou també un gestor dels recursos local (LMRd), que funciona com a interfície entre el dimoni CMRd (Pacemaker) i els recursos. LMRd passa les comandes de CMRd als agents, com per exemple, fer *start* o *stop*, o proporcionar informació sobre l'estat del node.
 
@@ -70,6 +75,8 @@ S'implementa com a un driver del kernel, i ens permet replicar les dades a temps
 
 ### Clúster Active/Passive
 ![Imatge Cluster PA](imatges/actiupassiu.png)
+
+
 Està composat de un mínim de dos nodes, dels que només hi haurà un actiu, i la resta romandràn inactius com a servidors de suports o *failover*, en cas de que el node que estava actiu es caigués o fallés.
 Cal recalcar que els clients només estàn connectats al servidor que hi sigui actiu en aquell moment.
 
@@ -79,6 +86,8 @@ Cal recalcar que els clients només estàn connectats al servidor que hi sigui a
 
 ### Clúster Active/Active
 ![Imatge Cluster AA](imatges/actiuactiu.png)
+
+
 Està composat de un mínim de dos nodes, que ofereixen el mateix servei. La seva funció principal es distribuir la càrrega de treball entre els diferents dispositius, per a  evitar que algún quedi sobrecarregat. 
 
 L'estructura també conte un *balancejador*, que es es l'intermediari mitjançant el qual es comuniquen els clients amb els servidors. Es qui exerceix la funció de assignar les peticions als nodes segons el criteri que s'hagi establert (Round Robin, ).

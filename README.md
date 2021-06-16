@@ -39,6 +39,8 @@ Aquests clústers, a l'hora de muntar-los, s'utilitzará la comanda de shell **p
 ### Components
 #### Cluster Information Base (CIB)
 ![Imatge CiB](imatges/cib_xml.png)
+
+
 És un dimoni que utilitza XML internament que té la funció de distribuir i sincronitzar la configuració actual, i l'estat del *Designated Coordinator*(DC) - node assignat per Pacemaker per a detectar i distribuir l'estat del clúster - a tots els nodes.
 Al CiB es desen certes configuracions essencials per al funcionament de l'estructura. 
 
@@ -105,6 +107,7 @@ DRBD admet tres modes de replicació:
 
 ### Clúster Active/Passive
 ![Imatge Cluster PA](imatges/actiupassiu.png)
+
 Està composat de un mínim de dos nodes, dels que només hi haurà un actiu, i la resta romandràn inactius com a servidors de suports o *failover*, en cas de que el node que estava actiu es caigués o fallés.
 Cal recalcar que els clients només estàn connectats al servidor que hi sigui actiu en aquell moment.
 
@@ -114,6 +117,7 @@ Cal recalcar que els clients només estàn connectats al servidor que hi sigui a
 
 ### Clúster Active/Active
 ![Imatge Cluster AA](imatges/actiuactiu.png)
+
 Està composat de un mínim de dos nodes, que ofereixen el mateix servei. La seva funció principal es distribuir la càrrega de treball entre els diferents dispositius, per a  evitar que algún quedi sobrecarregat. 
 
 L'estructura també conte un *balancejador*, que es es l'intermediari mitjançant el qual es comuniquen els clients amb els servidors. Es qui exerceix la funció de assignar les peticions als nodes segons el criteri que s'hagi establert (Round Robin, ).

@@ -3,12 +3,28 @@
 ![Imatge Logo Pacemaker](imatges/Logo_Pacemaker.png)
 
 
+# Índex
+
+- **[Objectius del projecte](#Objectius-del-projecte)**
+- **[Que és Pacemaker?](#Que-és-Pacemaker?)**
+- **[Que és un clúster?](#Que-és-un-clúster?)**
+  - **[Components](#Components)**
+    - **[Cluster Information Base](#Cluster-information-base)**
+    - **[Cluster Resource Manager Daemon](#Cluster-Resource-Manager-Daemon)**
+    - **[Shoot the Other Node in the Head (STONITH)](#Shoot-the-Other-Node-in-the-Head (STONITH))**
+  - **[Quorum](#Quorum)**
+  - **[Corosync](#Corosync)**
+  - **[DRBD](#DRBD)**
+  - **[Tipus de clúster](##Tipus-de-cluster)**
+    - **[Clúster Active/Passive](#Cluster-active-passive)**
+    - **[Clúster Active/Active](#Cluster-Active/Active)**
+
 ## Objectius del projecte
 L'objectiu és conéixer les funcionalitats de Pacemaker i d'altres tipus de software amb els que funciona conjuntament, per a dotar d'*Alta disponibilitat* a un clúster. Per demostrar el seu funcionament, aquest clúster estarà format per 2 nodes, i funcionarà com a un servidor que ofereix servei d'HTTP.
 
 [Procediment de creació d'un clúster](Procediment_Practica/Cluster_Creation.md)
 
-[Procediment de aplicació de DRBD a un clúster](Procediment_Practica/Cluster_DRDB.md)
+[Procediment d'aplicació de DRBD a un clúster](Procediment_Practica/Cluster_DRDB.md)
 
 ## Que és Pacemaker ?
 Pacemaker és un tipus de software de control de recursos de clúster, que s'utilitza generalment per preservar la integritat de les dades i poder proporcionar un servei amb el mínim d'aturades possible. 
@@ -57,7 +73,7 @@ Dimoni que gestiona les accions relacionades amb els recursos del clúster. Aque
 
 Cada node inclou també un gestor dels recursos local (LMRd), que funciona com a interfície entre el dimoni CMRd (Pacemaker) i els recursos. LMRd passa les comandes de CMRd als agents, com per exemple, fer *start* o *stop*, o proporcionar informació sobre l'estat del node.
 
-#### Shoot the Other Node in the Head (STONITH) o "fencing"
+#### Shoot the Other Node in the Head (STONITH)
 És una funcionalitat del clúster que processa les sol·licituds de *fence*, forçant l'aturada de nodes que s'hagin corromput o que no funcionin correctament, i eliminant-los del node per a protegir l'integritat de les dades. Está configurat al CIB i pot ser monitoritzat com un recurs més del clúster.
 És la única forma d'assegurarnos que les nostres dades estàn protegides completament, al desconectar el node corromput abans de permetre accedir a les dades des d'un altre node.
 
@@ -74,7 +90,7 @@ Existeix una situació especial quan un clúster de dos nodes perd la comunicaci
 Aquesta situació també es pot donar quan a un cluster master-slave, el master es desconnecta durant un espai curt de temps, en el que li dona temps a l'altre a ascendir com a *master*. Quan el *master* original torna a la seva posició, al estar els dos en el mateix estat, els canvis a la configuració poden generar una disconformitat a les dades.
 La única forma de protegir un clúster de dos nodes de la corrupció de dades, en cas de un error de connexió, es comprovant la comunicació entre nodes cada cert període de temps, i sino s'apaga (**downtime**).
 
-##### Quorum
+### Quorum
 
 Els clústers de més de dos nodes, fan ús del **quorum** per a prevenir les situacions de *split brain** i seguir funcionant. 
 El quorum és una operació matemàtica que indica el mínim de membres que han d'estar amb les dades sincronitzades correctament al clúster per a seguir engegat. El quorum es indicat per la *majoria* del total de nodes que composen el clúster.

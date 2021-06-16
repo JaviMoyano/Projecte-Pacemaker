@@ -8,3 +8,5 @@
 ![diapositiva](imatges_presentacio/8.png)
 ![diapositiva](imatges_presentacio/9.png)
 ![diapositiva](imatges_presentacio/10.png)
+![diapositiva](imatges_presentacio/11.png)
+![diapositiva](imatges_presentacio/12.png)

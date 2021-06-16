@@ -25,7 +25,7 @@ Algunes de les característiques i funcionalitats que pot atorgar al conjunt de 
 Un **clúster** es un conjunt de nodes que funciona amb l'objectiu de portar a terme una o varies tasques com si fóssin un únic ordinador. Pot tenir diverses funcions, tals com:
 
 - **Alt rendiment:** els diferents nodes poden treballar paral·lelament per a reduir el temps d'execució dels serveis i millorar el rendiment global del sistema.
-- **Emmagatzemament:** permet allotjar tot el conjunt de dades als diferents nodes, el que ofereix la possibilitat de accedir a les dades del servidor a través de qualsevol dels ordinadors que composen el clúster. Aquesta característica la proporciona [GFS2](GFS2), conjuntament amb Pacemaker.
+- **Emmagatzemament:** permet allotjar tot el conjunt de dades als diferents nodes, el que ofereix la possibilitat de accedir a les dades del servidor a través de qualsevol dels ordinadors que composen el clúster. Aquesta característica la proporciona GFS2, conjuntament amb Pacemaker.
 - **Balanç de càrregues:**: distribueix les sol·licituds que provenen de la xarxa entre els diferents nodes, per a que no hi hagi una sobrecàrrega en un d'aquests. Es redirigeixen les ordres a un altre node en cas de que algún quedi inoperatiu.
 - **Alta disponibilitat:** proporciona un servei sense aturades en cas de que algún element del sistema caigués o fallés. 
 Un cop detectat un error de hardware o de software, s'engega automàticament la mateixa aplicació o servei a un altre sistema/node sense necessitat de fer-ho manualment. Aquest procés es conegut com *failover*, que es tradueix com a *migració a causa d'error*. 
@@ -51,10 +51,32 @@ Dimoni que gestiona les accions relacionades amb els recursos del clúster. Aque
 
 Cada node inclou també un gestor dels recursos local (LMRd), que funciona com a interfície entre el dimoni CMRd (Pacemaker) i els recursos. LMRd passa les comandes de CMRd als agents, com per exemple, fer *start* o *stop*, o proporcionar informació sobre l'estat del node.
 
-#### Shoot the Other Node in the Head (STONITH)
-És una funcionalitat del clúster que processa les sol·licituds de *fence*, forçant l'aturada de nodes que s'hagin corromput o que no funcionin correctament, i eliminant-los del node per a protegir l'integritat de les dades. Está configurat en CIB i pot ser monitoritzat com un recurs més del clúster.
+#### Shoot the Other Node in the Head (STONITH) o "fencing"
+És una funcionalitat del clúster que processa les sol·licituds de *fence*, forçant l'aturada de nodes que s'hagin corromput o que no funcionin correctament, i eliminant-los del node per a protegir l'integritat de les dades. Está configurat al CIB i pot ser monitoritzat com un recurs més del clúster.
+És la única forma d'assegurarnos que les nostres dades estàn protegides completament, al desconectar el node corromput abans de permetre accedir a les dades des d'un altre node.
 
-## Corosync
+És una característica que està activada per defecte als clúster, ja que no s'entén el funcionament d'un clúster sense stonith. Desactivar-ho provoca que els nodes corromputs, siguin detectats com nodes apagats de forma segura.
+Es pot desactivar amb:
+
+```
+pcs property set stonith-enabled=false
+```
+
+Els dispositius de *fencing* poden ser interruptors que al activar-se tallen el corrent al node corromput, interruptors que tallen la connexió, dispositius d'emmagatzemament capaços de bloquejar l'accés a un host, etc.
+
+Existeix una situació especial quan un clúster de dos nodes perd la comunicació entre aquests, pero no amb la xarxa. Ambdós nodes seguiràn funcionant com si l'altre estigués apagat, pero no és el cas. Al seguir rebent peticions i canvis a la configuració pel seu compte, es pot crear una divergència a les dades. Aquesta situació es coneguda com a **split brain**.
+Aquesta situació també es pot donar quan a un cluster master-slave, el master es desconnecta durant un espai curt de temps, en el que li dona temps a l'altre a ascendir com a *master*. Quan el *master* original torna a la seva posició, al estar els dos en el mateix estat, els canvis a la configuració poden generar una disconformitat a les dades.
+La única forma de protegir un clúster de dos nodes de la corrupció de dades, en cas de un error de connexió, es comprovant la comunicació entre nodes cada cert període de temps, i sino s'apaga (**downtime**).
+
+##### Quorum
+
+Els clústers de més de dos nodes, fan ús del **quorum** per a prevenir les situacions de *split brain** i seguir funcionant. 
+El quorum és una operació matemàtica que indica el mínim de membres que han d'estar amb les dades sincronitzades correctament al clúster per a seguir engegat. El quorum es indicat per la *majoria* del total de nodes que composen el clúster.
+Per exemple, si el clúster el formen 5 nodes, hi ha d'haver un mínim de 3 que estàn ben sincronitzats.
+
+(2 * nodes actius) > total de nodes
+
+### Corosync
 Clúster Corosync es el component que s'encarrega de gestionar el sistema de comunicació entre els nodes, implementant la transmissió de informació entre els components, autoconeixement dels dispositius que formen part de l'estructura, i informació sobre l'estat de quorum.
 
 A l'aplicació pràctica, veiem la comanda *pcs* (Pacemaker/Corosync), que serveix per:
@@ -63,10 +85,14 @@ A l'aplicació pràctica, veiem la comanda *pcs* (Pacemaker/Corosync), que serve
 - Mostrar l'informació de l'estat del clúster així com aturar-lo o engegar-lo
 
 
-## DRBD
+### DRBD
 DRBD (Distributed Replicated Block Device) és un sistema d'emmagatzemament replicat i distribuit per a Linux. 
 S'implementa com a un driver del kernel, i ens permet replicar les dades a temps real entre els nodes del clúster.
 
+DRBD admet tres modes de replicació:
+- Protocol A: protocol de replicació asíncrona.
+- Protocol B: protocol de replicació semi-asíncrona. Sincronització de memoria.
+- Protocol C: utilitzat normalment en nodes de xarxes petites. Es l'ús més comú.
 
 
 

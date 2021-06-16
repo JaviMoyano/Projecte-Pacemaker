@@ -1,9 +1,15 @@
-###DRBD
-Reflexa es continguts dels dispositius com discs durs, particions, volums lógic, etc. entre servidors. Implica una copa de dades en dos o més dispositius de emmagatzemament, de manera que si falla un, les dades de l'altre puguin ser utilitzades. 
+# Procediment pràctic
 
-Comentari --> Semblant a Raid 1
+## Sincronització de dades amb DRBD
 
-DRDB necessitarà el seu propi block device a cada node. Per a aquest exercici
+Quan oferim un servei com apache a més dun node, i les dades que es mostren son cambiants, implica una réplica de les dades en els dos o més dispositius d'emmagatzemament. 
+Si falla un, les dades de l'altre node han de estar correctament sincronitzades i poder ser utilitzades.
+
+DRBD otorga aquesta característica als nodes del clúster. Això pot ser comparat amb un RAID de nivell 1.
+
+[Imatge RAID1](imatges/raid1.png)
+
+Per a poder aplicar aquest software, DRDB necessitarà el seu propi block device a cada node.
 
 ***
 Per replicar l'emmagatzemament, hem de afegir les configuracions necessaries a l'arxiu de */etc/drbd.d/global_common.conf* que conté les seccions globals i comuns de la configuració DRBD.

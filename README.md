@@ -4,7 +4,11 @@
 
 
 ## Objectius del projecte
-L'objectiu és conéixer les funcionalitats de Pacemaker i d'altres tipus de software amb els que funciona conjuntament, per a dotar d'*Alta disponibilitat* a un clúster. Per demostrar el seu funcionament, aquest clúster estarà format per 3 nodes, i funcionarà com a un servidor que ofereix servei d'HTTP.
+L'objectiu és conéixer les funcionalitats de Pacemaker i d'altres tipus de software amb els que funciona conjuntament, per a dotar d'*Alta disponibilitat* a un clúster. Per demostrar el seu funcionament, aquest clúster estarà format per 2 nodes, i funcionarà com a un servidor que ofereix servei d'HTTP.
+
+[Procediment de creació d'un clúster](Procediment_Practica/Cluster_Creation.md)
+
+[Procediment de aplicació de DRBD a un clúster](Procediment_Practica/Cluster_DRDB.md)
 
 ## Que és Pacemaker ?
 Pacemaker és un tipus de software de control de recursos de clúster, que s'utilitza generalment per preservar la integritat de les dades i poder proporcionar un servei amb el mínim d'aturades possible. 
@@ -95,6 +99,9 @@ DRBD admet tres modes de replicació:
 - Protocol C: utilitzat normalment en nodes de xarxes petites. Es l'ús més comú.
 
 
+
+
+## Tipus de clúster
 
 ### Clúster Active/Passive
 ![Imatge Cluster PA](imatges/actiupassiu.png)

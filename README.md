@@ -92,7 +92,7 @@ La única forma de protegir un clúster de dos nodes de la corrupció de dades, 
 
 ### Quorum
 
-Els clústers de més de dos nodes, fan ús del **quorum** per a prevenir les situacions de *split brain** i seguir funcionant. 
+Els clústers de més de dos nodes, fan ús del **quorum** per a prevenir les situacions de **split brain** i seguir funcionant. 
 El quorum és una operació matemàtica que indica el mínim de membres que han d'estar amb les dades sincronitzades correctament al clúster per a seguir engegat. El quorum es indicat per la *majoria* del total de nodes que composen el clúster.
 Per exemple, si el clúster el formen 5 nodes, hi ha d'haver un mínim de 3 que estàn ben sincronitzats.
 
